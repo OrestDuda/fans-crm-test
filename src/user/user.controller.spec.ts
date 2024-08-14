@@ -2,20 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateUserDto } from './create-user.dto';
+import { User } from './user.model';
 
 describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
 
   const mockUserService = {
-    addUser: jest.fn(dto => {
+    addUser: jest.fn((user: User) => {
       return {
         id: Date.now(),
-        ...dto,
+        ...user,
       };
     }),
-    getUserById: jest.fn(id => {
+    getUserById: jest.fn((id: string) => {
       return {
         id,
         name: 'John Doe',
@@ -48,13 +48,13 @@ describe('UserController', () => {
   });
 
   it('should create a user', async () => {
-    const dto: CreateUserDto = { name: 'John Doe', email: 'johndoe@example.com', phone: '1234567890' };
-    expect(await controller.addUser(dto)).toEqual({
+    const user: User = { name: 'John Doe', email: 'johndoe@example.com', phone: '1234567890' } as User;
+    expect(await controller.addUser(user)).toEqual({
       id: expect.any(Number),
-      ...dto,
+      ...user,
     });
 
-    expect(service.addUser).toHaveBeenCalledWith(dto);
+    expect(service.addUser).toHaveBeenCalledWith(user);
   });
 
   it('should get a user by ID', async () => {
